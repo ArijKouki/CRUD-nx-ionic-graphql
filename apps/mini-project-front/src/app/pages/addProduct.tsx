@@ -57,7 +57,7 @@ const AddProduct: React.FC = () => {
         }
       })
 
-      sessionStorage.setItem('productAdded', 'true');
+      //sessionStorage.setItem('productAdded', 'true');
 
       history.push('/');
     } catch (error) {

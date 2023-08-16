@@ -83,7 +83,7 @@ const Products: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-      {productAdded === 'true' && (
+      {/*productAdded === 'true' && (
           <IonText className="success-message">
             Product successfully added!
           </IonText>
@@ -92,7 +92,7 @@ const Products: React.FC = () => {
           <IonText className="success-message">
             Product successfully updated!
           </IonText>
-        )}
+        )*/}
         
   <IonGrid>
     <IonRow>

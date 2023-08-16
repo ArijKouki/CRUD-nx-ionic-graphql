@@ -86,7 +86,7 @@ const UpdateProduct: React.FC = () => {
           quantity: productData.quantity,
         },
       });
-      sessionStorage.setItem('productUpdated', 'true');
+      //sessionStorage.setItem('productUpdated', 'true');
       history.push('/'); 
     } catch (error) {
       console.log(error);
