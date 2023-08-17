@@ -70,8 +70,8 @@ const Products: React.FC = () => {
 
 
 
-  if (loading) return <IonLoading isOpen={true} message="Loading..." />;
-  if (error) return <p>Error: {error.message}</p>;
+  /*if (loading) return <IonLoading isOpen={true} message="Loading..." />;
+  if (error) return <p>Error: {error.message}</p>;*/
 
   return (
     <IonPage>
@@ -93,7 +93,10 @@ const Products: React.FC = () => {
             Product successfully updated!
           </IonText>
         )*/}
-        
+        {loading && (<p>Loading ..</p>)}
+        {error && (<p>Error: {error.message}</p>)}
+
+    {data && (    
   <IonGrid>
     <IonRow>
       {data.getAllProducts.map((product: { id: string; name: string; price: number; quantity: number }) => (
@@ -112,7 +115,7 @@ const Products: React.FC = () => {
         </IonCol>
       ))}
     </IonRow>
-  </IonGrid>
+  </IonGrid>)}
 
         <IonAlert
           isOpen={showDeleteAlert}
@@ -145,6 +148,7 @@ const Products: React.FC = () => {
         </Link>
       </IonFabButton>
     </IonFab>
+
     </IonPage>
   );
 };
