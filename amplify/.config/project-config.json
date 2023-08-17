@@ -1,0 +1,17 @@
+{
+  "providers": [
+    "awscloudformation"
+  ],
+  "projectName": "FrontendArij",
+  "version": "3.1",
+  "frontend": "javascript",
+  "javascript": {
+    "framework": "react",
+    "config": {
+      "SourceDir": "apps/mini-project-front/src",
+      "DistributionDir": "apps/mini-project-front/build",
+      "BuildCommand": "nx build mini-project-front",
+      "StartCommand": "nx serve mini-project-front"
+    }
+  }
+}
