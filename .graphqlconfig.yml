@@ -1,0 +1,12 @@
+projects:
+  apiArij:
+    schemaPath: apps/mini-project-front/src/graphql/schema.json
+    includes:
+      - apps/mini-project-front/src/graphql/**/*.ts
+    excludes:
+      - ./amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: typescript
+        generatedFileName: generated-graphql.ts
+        docsFilePath: apps/mini-project-front/src/graphql

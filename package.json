@@ -6,6 +6,8 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.8.1",
+    "@aws-amplify/api": "^5.4.2",
+    "@aws-amplify/auth": "^5.6.2",
     "@aws-amplify/ui-react": "^5.1.1",
     "@capacitor/cli": "^5.2.3",
     "@capacitor/core": "^5.2.3",

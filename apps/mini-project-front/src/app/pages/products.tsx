@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import React, { useState, useEffect } from 'react';
+import { API, graphqlOperation } from 'aws-amplify';
 import {
   IonContent,
   IonHeader,
@@ -20,27 +20,34 @@ import {
   IonCol,
   IonRow,
   IonGrid,
-  IonText,
 } from '@ionic/react';
-import { Link} from 'react-router-dom';
-import { GET_ALL_PRODUCTS, DELETE_PRODUCT } from '../graphql';
+import { Link } from 'react-router-dom';
 import { addOutline } from 'ionicons/icons';
-
-
-
+import { listProducts } from '../../graphql/queries';
+import { deleteProduct } from '../../graphql/mutations';
 
 const Products: React.FC = () => {
-
-
-  const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
-
-
-  
-
-  const [deleteProduct] = useMutation(DELETE_PRODUCT);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null); 
+  const [data, setData] = useState<Array<any> | null>(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const productsData = await API.graphql(graphqlOperation(listProducts));
+      setData(productsData.data.listProducts.items);
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleDeleteClick = (productId: string) => {
     setSelectedProductId(productId);
@@ -49,33 +56,18 @@ const Products: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await deleteProduct({
-        variables: {
-          id: selectedProductId,
-        },
-      });
-
+      await API.graphql(graphqlOperation(deleteProduct, { input: { id: selectedProductId } }));
       console.log('Product deleted:', selectedProductId);
       setSelectedProductId(null);
       setShowDeleteAlert(false);
-      window.location.reload();
-
+      fetchProducts(); // Refetch products after deletion
     } catch (error) {
       console.error('Error deleting product:', error);
     }
   };
 
-  const productAdded = sessionStorage.getItem('productAdded');
-  const productUpdated = sessionStorage.getItem('productUpdated');
-
-
-
-  /*if (loading) return <IonLoading isOpen={true} message="Loading..." />;
-  if (error) return <p>Error: {error.message}</p>;*/
-
   return (
     <IonPage>
-
       <IonHeader>
         <IonToolbar>
           <IonTitle>Products</IonTitle>
@@ -83,39 +75,38 @@ const Products: React.FC = () => {
       </IonHeader>
 
       <IonContent className="ion-padding">
-      {/*productAdded === 'true' && (
-          <IonText className="success-message">
-            Product successfully added!
-          </IonText>
-        )}
-        {productUpdated === 'true' && (
-          <IonText className="success-message">
-            Product successfully updated!
-          </IonText>
-        )*/}
-        {loading && (<p>Loading ..</p>)}
-        {error && (<p>Error: {error.message}</p>)}
+        {loading && <IonLoading isOpen={true} message="Loading..." />}
+        {error && <p>Error: {error.message}</p>}
 
-    {data && (    
-  <IonGrid>
-    <IonRow>
-      {data.getAllProducts.map((product: { id: string; name: string; price: number; quantity: number }) => (
-        <IonCol key={product.id} size="6">
-          <IonCard className="ion-text-center">
-            <IonCardHeader>
-              <IonCardTitle>{product.name}</IonCardTitle>
-              <IonCardSubtitle>Price: {product.price}</IonCardSubtitle>
-              <IonCardSubtitle>Quantity: {product.quantity}</IonCardSubtitle>
-            </IonCardHeader>
-            <IonCardContent>
-              <IonButton  color="medium" fill="outline" routerLink={`/update/${product.id}`}> Update </IonButton>
-              <IonButton color="danger" fill="outline" onClick={() => handleDeleteClick(product.id)}> Delete </IonButton>
-            </IonCardContent>
-          </IonCard>
-        </IonCol>
-      ))}
-    </IonRow>
-  </IonGrid>)}
+        {data && (
+          <IonGrid>
+            <IonRow>
+              {data.map((product: { id: string; name: string; price: number; quantity: number }) => (
+                <IonCol key={product.id} size="6">
+                  <IonCard className="ion-text-center">
+                    <IonCardHeader>
+                      <IonCardTitle>{product.name}</IonCardTitle>
+                      <IonCardSubtitle>Price: {product.price}</IonCardSubtitle>
+                      <IonCardSubtitle>Quantity: {product.quantity}</IonCardSubtitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                      <IonButton color="medium" fill="outline" routerLink={`/update/${product.id}`}>
+                        Update
+                      </IonButton>
+                      <IonButton
+                        color="danger"
+                        fill="outline"
+                        onClick={() => handleDeleteClick(product.id)}
+                      >
+                        Delete
+                      </IonButton>
+                    </IonCardContent>
+                  </IonCard>
+                </IonCol>
+              ))}
+            </IonRow>
+          </IonGrid>
+        )}
 
         <IonAlert
           isOpen={showDeleteAlert}
@@ -136,19 +127,15 @@ const Products: React.FC = () => {
             },
           ]}
         />
-
-
-
       </IonContent>
 
       <IonFab vertical="bottom" horizontal="end" slot="fixed">
-      <IonFabButton color="success">
-        <Link to='/add' style={{ color: 'inherit', textDecoration: 'none' }}>
-          <IonIcon icon={addOutline} />
-        </Link>
-      </IonFabButton>
-    </IonFab>
-
+        <IonFabButton color="success">
+          <Link to="/add" style={{ color: 'inherit', textDecoration: 'none' }}>
+            <IonIcon icon={addOutline} />
+          </Link>
+        </IonFabButton>
+      </IonFab>
     </IonPage>
   );
 };

@@ -1,17 +1,14 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.css';
 import React from 'react';
-import { IonApp, IonRouterOutlet,setupIonicReact } from '@ionic/react';
+import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Route} from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import AddProduct from './pages/addProduct';
 import Products from './pages/products';
-import { ApolloProvider} from '@apollo/client';
-import client from './appoloClient';
+import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client'; // Import ApolloClient and InMemoryCache
+import { API, Auth } from 'aws-amplify'; // Import API and Auth from aws-amplify
 import GetProduct from './pages/getProduct';
 import UpdateProduct from './pages/updateProduct';
-
-
+import awsmobile from '../aws-exports'
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 
@@ -30,22 +27,32 @@ import '@ionic/react/css/display.css';
 
 setupIonicReact();
 
+// Configure Amplify with the imported awsconfig
+API.configure(awsmobile);
+Auth.configure(awsmobile);
 
+// Create an Apollo Client instance
+const client = new ApolloClient({
+  uri: awsmobile.aws_appsync_graphqlEndpoint,
+  cache: new InMemoryCache(),
+  headers: {
+    'x-api-key': awsmobile.aws_appsync_apiKey,
+  },
+});
 
 const App: React.FC = () => (
   <IonApp>
-  <ApolloProvider client={client}>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/" component={Products} />
-        <Route path="/get/:id" component={GetProduct} />        
-        <Route path="/add" component={AddProduct} />
-        <Route path="/update/:id" component={UpdateProduct} />
-      </IonRouterOutlet>
-    </IonReactRouter>
+    <ApolloProvider client={client}>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <Route exact path="/" component={Products} />
+          <Route path="/get/:id" component={GetProduct} />
+          <Route path="/add" component={AddProduct} />
+          <Route path="/update/:id" component={UpdateProduct} />
+        </IonRouterOutlet>
+      </IonReactRouter>
     </ApolloProvider>
   </IonApp>
 );
 
 export default App;
-
