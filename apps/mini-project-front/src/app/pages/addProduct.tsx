@@ -3,6 +3,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonButton, IonLab
 import { useHistory } from 'react-router-dom';
 import { API, graphqlOperation } from 'aws-amplify'; // Import Amplify API
 import { createProduct } from '../../graphql/mutations'; // Import your mutation
+import { listProducts } from '../../graphql/queries';
 
 const AddProduct: React.FC = () => {
   const history = useHistory();
@@ -26,6 +27,16 @@ const AddProduct: React.FC = () => {
     }
   };
 
+  const fetchProductList = async () => {
+    // Fetch the product list using your listProducts query
+    try {
+      const response = await API.graphql(graphqlOperation(listProducts));
+      // Update the product list state or do other processing
+    } catch (error) {
+      console.error('Error fetching product list:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -36,9 +47,7 @@ const AddProduct: React.FC = () => {
       };
 
       await API.graphql(graphqlOperation(createProduct, { input })); // Use Amplify API
-
-      // Trigger a refetch of the product list
-      //getlistProductsQueryRefetch();
+      await fetchProductList();
       history.push('/');
     } catch (error) {
       if (error instanceof Error) {

@@ -14,6 +14,7 @@ const UpdateProduct: React.FC = () => {
     quantity: 0,
   });
 
+
   useEffect(() => {
     async function fetchProduct() {
       try {
@@ -26,6 +27,8 @@ const UpdateProduct: React.FC = () => {
     }
     fetchProduct();
   }, [id]);
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,16 +53,27 @@ const UpdateProduct: React.FC = () => {
     setProductData({ ...productData, [name]: newValue });
   };
 
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      await API.graphql(graphqlOperation(updateProduct, { input: productData }));
+      const input = {
+        id,
+        name: productData.name,
+        price: productData.price,
+        quantity: productData.quantity,
+      };
+  
+      await API.graphql(graphqlOperation(updateProduct, { input }));
+      
       history.push('/');
     } catch (error) {
       console.log(error);
     }
   };
+
 
   const handleCancel = () => {
     history.push('/');
