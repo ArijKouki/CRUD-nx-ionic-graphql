@@ -27,7 +27,7 @@ const AddProduct: React.FC = () => {
     }
   };
 
-  const fetchProductList = async () => {
+  /*const fetchProductList = async () => {
     // Fetch the product list using your listProducts query
     try {
       const response = await API.graphql(graphqlOperation(listProducts));
@@ -35,7 +35,7 @@ const AddProduct: React.FC = () => {
     } catch (error) {
       console.error('Error fetching product list:', error);
     }
-  };
+  };*/
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +47,7 @@ const AddProduct: React.FC = () => {
       };
 
       await API.graphql(graphqlOperation(createProduct, { input })); // Use Amplify API
-      await fetchProductList();
+      //await fetchProductList();
       history.push('/');
     } catch (error) {
       if (error instanceof Error) {

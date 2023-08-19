@@ -67,7 +67,6 @@ const UpdateProduct: React.FC = () => {
       };
   
       await API.graphql(graphqlOperation(updateProduct, { input }));
-      
       history.push('/');
     } catch (error) {
       console.log(error);

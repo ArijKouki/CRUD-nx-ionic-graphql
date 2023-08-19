@@ -21,7 +21,7 @@ import {
   IonRow,
   IonGrid,
 } from '@ionic/react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { addOutline } from 'ionicons/icons';
 import { listProducts } from '../../graphql/queries';
 import { deleteProduct } from '../../graphql/mutations';
@@ -32,6 +32,9 @@ const Products: React.FC = () => {
   const [data, setData] = useState<Array<any> | null>(null);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+
+  const history = useHistory(); // Get the history object
+
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -48,6 +51,17 @@ const Products: React.FC = () => {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  // Add this effect to refetch data when history location changes
+  useEffect(() => {
+    const unlisten = history.listen(() => {
+      fetchProducts();
+    });
+
+    return () => {
+      unlisten(); // Cleanup the listener when the component unmounts
+    };
+  }, [history]);
 
   const handleDeleteClick = (productId: string) => {
     setSelectedProductId(productId);
@@ -93,11 +107,7 @@ const Products: React.FC = () => {
                       <IonButton color="medium" fill="outline" routerLink={`/update/${product.id}`}>
                         Update
                       </IonButton>
-                      <IonButton
-                        color="danger"
-                        fill="outline"
-                        onClick={() => handleDeleteClick(product.id)}
-                      >
+                      <IonButton color="danger" fill="outline" onClick={() => handleDeleteClick(product.id)}>
                         Delete
                       </IonButton>
                     </IonCardContent>
